@@ -7,19 +7,23 @@ public class Locomotor : MonoBehaviour
     [SerializeField] private float idleTargetWidth = 0.1f;
     [SerializeField] private float walkingTargetWidth = 0.1f;
     [SerializeField] private float targetWidth = 0.1f;
-    [SerializeField] private float targetOvershoot = 0.09f;
+    [Range(0,1)][SerializeField] private float targetOvershoot = 0.09f;
     [SerializeField] private float footVelocity = 0.1f;
     public const int LEG_COUNT = 6;
     [SerializeField] private Vector3[] feetPositions = new Vector3[LEG_COUNT];
-    public Vector3[] idleTargets = new Vector3[LEG_COUNT];
-    [SerializeField] private Vector3[] targets = new Vector3[LEG_COUNT];
-    [SerializeField] private bool[] grounded = new bool[LEG_COUNT];
+    public Vector3[] restTargets = new Vector3[LEG_COUNT];
+    [SerializeField] private Vector3[] moveTargets = new Vector3[LEG_COUNT];
+    private bool[] grounded = new bool[LEG_COUNT];
     public Vector3 pathTarget = new Vector3(0, 0, 0);
     [SerializeField] private float pathTargetRadius = 0.5f;
     [SerializeField] private float mechVelocity = 0.5f;
     [SerializeField] private State state = State.Idle;
     public bool edit = false;
-    [SerializeField] private bool showTargets = false;
+    [Header("Gizmos")]
+    [SerializeField] private bool showRestTargets = false;
+    [SerializeField] private bool showMoveTargets = false;
+
+    private Vector3 mechDirection = new(0f,0f,0f);
 
     // Start is called before the first frame update
     void Start()
@@ -41,7 +45,8 @@ public class Locomotor : MonoBehaviour
                 break;
             case State.Walking:
                 targetWidth = walkingTargetWidth;
-                transform.position += (pathTarget - transform.position).normalized * mechVelocity * Time.deltaTime;
+                mechDirection = (pathTarget - transform.position).normalized;
+                transform.position += mechDirection * mechVelocity * Time.deltaTime;
                 break;
             case State.Running:
                 targetWidth = walkingTargetWidth;
@@ -51,25 +56,10 @@ public class Locomotor : MonoBehaviour
                 break;
         }
 
-        // if (state == State.Idle)
-        {
-            for (int i = 0; i < LEG_COUNT; i++)
-            {
-                Vector3 heightLessTarget = idleTargets[i] + transform.position;
-                
-                // Implement hole detection
-                RaycastHit hit;
-                if (Physics.Raycast(heightLessTarget + Vector3.up * 10, Vector3.down, out hit, 20))
-                {
-                    targets[i] = hit.point;
-                }
-            }
-        }
-
         for (int i = 0; i < LEG_COUNT; i++)
         {
-            float distance = (targets[i] - feetPositions[i]).magnitude;
-            if (distance > targetWidth)
+            float distance = ((restTargets[i]  + transform.position) - feetPositions[i]).magnitude;
+            if (distance > targetWidth || !grounded[i])
             {
                 if (grounded[i])
                 {
@@ -78,7 +68,32 @@ public class Locomotor : MonoBehaviour
 
                 if (!grounded[i])
                 {
-                    feetPositions[i] += (targets[i] - feetPositions[i]).normalized * footVelocity * Time.deltaTime;
+                    Vector3 heightLessTarget = restTargets[i] + transform.position;
+                
+                    Vector3 overshoot = Vector3.zero;
+                    if (state != State.Idle) overshoot = mechDirection * targetOvershoot * targetWidth;
+                    // Implement hole detection
+                    RaycastHit hit;
+                    if (Physics.Raycast(
+                        heightLessTarget +
+                        overshoot +
+                        Vector3.up * 10,
+                        Vector3.down, out hit, 20))
+                    {
+                        moveTargets[i] = hit.point;
+                    }
+
+                    float stepDistance = footVelocity * Time.deltaTime;
+                    Vector3 displacementVector = moveTargets[i] - feetPositions[i];
+                    if (displacementVector.magnitude > stepDistance)
+                    {
+                        feetPositions[i] += displacementVector.normalized * stepDistance;
+                    }
+                    else
+                    {
+                        feetPositions[i] = moveTargets[i];
+                        grounded[i] = true;
+                    }
                 }
             }
             else
@@ -103,18 +118,24 @@ public class Locomotor : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.color = Color.magenta;
-        Gizmos.DrawSphere(pathTarget, 0.1f);
+        DrawCircle(pathTarget, pathTargetRadius, Color.magenta);
+        Gizmos.DrawSphere(transform.position, 0.2f);
 
-        if (showTargets)
-            foreach (var footTarget in targets)
+        if (showRestTargets)
+            foreach (var target in restTargets)
             {
-                DrawCircle(footTarget, targetWidth, Color.red);
+                DrawCircle(target + Vector3.Scale(transform.position, new (1,0,1)), targetWidth, Color.red);
             }
 
         for (int i = 0; i < LEG_COUNT; i++)
         {
             Gizmos.color = grounded[i]? Color.blue : Color.cyan;
             Gizmos.DrawSphere(feetPositions[i], 0.2f);
+
+            if (!showMoveTargets) continue;
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(restTargets[i] + transform.position, feetPositions[i]);
+            Gizmos.DrawSphere(moveTargets[i], 0.1f);
         }
 
     }
@@ -149,11 +170,11 @@ public class LocomotorEditor : Editor
         for (int i = 0; i < Locomotor.LEG_COUNT; i++)
         {
             EditorGUI.BeginChangeCheck();
-            Vector3 target = Handles.PositionHandle(loc.idleTargets[i]  + Vector3.Scale(loc.transform.position, new (1,0,1)), Quaternion.identity);
+            Vector3 target = Handles.PositionHandle(loc.restTargets[i] + Vector3.Scale(loc.transform.position, new (1,0,1)), Quaternion.identity);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(loc, "Change Target Position");
-                loc.idleTargets[i] = target - Vector3.Scale(loc.transform.position, new (1,0,1));
+                loc.restTargets[i] = target - Vector3.Scale(loc.transform.position, new (1,0,1));
                 EditorUtility.SetDirty(loc);
             }
         }
