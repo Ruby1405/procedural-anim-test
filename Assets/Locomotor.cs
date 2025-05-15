@@ -14,8 +14,12 @@ public class Locomotor : MonoBehaviour
     public Vector3[] idleTargets = new Vector3[LEG_COUNT];
     [SerializeField] private Vector3[] targets = new Vector3[LEG_COUNT];
     [SerializeField] private bool[] grounded = new bool[LEG_COUNT];
+    public Vector3 pathTarget = new Vector3(0, 0, 0);
+    [SerializeField] private float pathTargetRadius = 0.5f;
+    [SerializeField] private float mechVelocity = 0.5f;
     [SerializeField] private State state = State.Idle;
     public bool edit = false;
+    [SerializeField] private bool showTargets = false;
 
     // Start is called before the first frame update
     void Start()
@@ -26,6 +30,10 @@ public class Locomotor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        float distanceToPT = (pathTarget - transform.position).magnitude;
+        if (distanceToPT > pathTargetRadius) state = State.Walking;
+        else state = State.Idle;
+
         switch (state)
         {
             case State.Idle:
@@ -33,6 +41,7 @@ public class Locomotor : MonoBehaviour
                 break;
             case State.Walking:
                 targetWidth = walkingTargetWidth;
+                transform.position += (pathTarget - transform.position).normalized * mechVelocity * Time.deltaTime;
                 break;
             case State.Running:
                 targetWidth = walkingTargetWidth;
@@ -42,7 +51,7 @@ public class Locomotor : MonoBehaviour
                 break;
         }
 
-        if (state == State.Idle)
+        // if (state == State.Idle)
         {
             for (int i = 0; i < LEG_COUNT; i++)
             {
@@ -64,21 +73,10 @@ public class Locomotor : MonoBehaviour
             {
                 if (grounded[i])
                 {
-                    bool OthersGrounded = true;
-                    for (int ii = 0; ii < LEG_COUNT; ii++)
-                    {
-                        if (i != ii && !grounded[ii])
-                        {
-                            OthersGrounded = false;
-                            break;
-                        }
-                    }
-                    if (OthersGrounded)
-                    {
-                        grounded[i] = false;
-                    }
+                    grounded[i] = !(grounded[(i + LEG_COUNT - 1) % LEG_COUNT] && grounded[(i + LEG_COUNT + 1) % LEG_COUNT]);
                 }
-                else
+
+                if (!grounded[i])
                 {
                     feetPositions[i] += (targets[i] - feetPositions[i]).normalized * footVelocity * Time.deltaTime;
                 }
@@ -104,14 +102,19 @@ public class Locomotor : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        foreach (var footTarget in targets)
-        {
-            DrawCircle(footTarget, targetWidth, Color.red);
-        }
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawSphere(pathTarget, 0.1f);
+
+        if (showTargets)
+            foreach (var footTarget in targets)
+            {
+                DrawCircle(footTarget, targetWidth, Color.red);
+            }
+
         for (int i = 0; i < LEG_COUNT; i++)
         {
-            Gizmos.color = grounded[i]? Color.blue : Color.yellow;
-            Gizmos.DrawSphere(feetPositions[i], 0.05f);
+            Gizmos.color = grounded[i]? Color.blue : Color.cyan;
+            Gizmos.DrawSphere(feetPositions[i], 0.2f);
         }
 
     }
@@ -131,6 +134,16 @@ public class LocomotorEditor : Editor
     void OnSceneGUI()
     {
         Locomotor loc = (Locomotor)target;
+
+        EditorGUI.BeginChangeCheck();
+        Vector3 pt = Handles.PositionHandle(loc.pathTarget, Quaternion.identity);
+        if (EditorGUI.EndChangeCheck())
+        {
+            Undo.RecordObject(loc, "Change path target position");
+            loc.pathTarget = pt;
+            EditorUtility.SetDirty(loc);
+        }
+
         if (!loc.edit) return;
 
         for (int i = 0; i < Locomotor.LEG_COUNT; i++)
