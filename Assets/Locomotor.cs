@@ -62,18 +62,24 @@ public class Locomotor : MonoBehaviour
             float distance = (targets[i] - feetPositions[i]).magnitude;
             if (distance > targetWidth)
             {
-                bool OthersGrounded = true;
-                for (int ii = 0; ii < LEG_COUNT; ii++)
+                if (grounded[i])
                 {
-                    if (i != ii && !grounded[ii])
+                    bool OthersGrounded = true;
+                    for (int ii = 0; ii < LEG_COUNT; ii++)
                     {
-                        OthersGrounded = false;
-                        break;
+                        if (i != ii && !grounded[ii])
+                        {
+                            OthersGrounded = false;
+                            break;
+                        }
+                    }
+                    if (OthersGrounded)
+                    {
+                        grounded[i] = false;
                     }
                 }
-                if (OthersGrounded)
+                else
                 {
-                    grounded[i] = false;
                     feetPositions[i] += (targets[i] - feetPositions[i]).normalized * footVelocity * Time.deltaTime;
                 }
             }
