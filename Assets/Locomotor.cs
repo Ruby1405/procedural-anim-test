@@ -10,9 +10,9 @@ public class Locomotor : MonoBehaviour
     [Range(0,1)][SerializeField] private float targetOvershoot = 0.09f;
     [SerializeField] private float footVelocity = 0.1f;
     public const int LEG_COUNT = 6;
-    [SerializeField] private Vector3[] feetPositions = new Vector3[LEG_COUNT];
+    private Vector3[] feetPositions = new Vector3[LEG_COUNT];
     public Vector3[] restTargets = new Vector3[LEG_COUNT];
-    [SerializeField] private Vector3[] moveTargets = new Vector3[LEG_COUNT];
+    private Vector3[] moveTargets = new Vector3[LEG_COUNT];
     private bool[] grounded = new bool[LEG_COUNT];
     public Vector3 pathTarget = new Vector3(0, 0, 0);
     [SerializeField] private float pathTargetRadius = 0.5f;
