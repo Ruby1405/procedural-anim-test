@@ -64,25 +64,28 @@ public class Locomotor : MonoBehaviour
                 if (grounded[i])
                 {
                     grounded[i] = !(grounded[(i + LEG_COUNT - 1) % LEG_COUNT] && grounded[(i + LEG_COUNT + 1) % LEG_COUNT]);
+
+                    if (!grounded[i])
+                    {
+                        Vector3 heightlessTarget = restTargets[i] + transform.position;
+                    
+                        Vector3 overshoot = Vector3.zero;
+                        if (state != State.Idle) overshoot = mechDirection * targetOvershoot * targetWidth;
+                        // Implement hole detection
+                        RaycastHit hit;
+                        if (Physics.Raycast(
+                            heightlessTarget +
+                            overshoot +
+                            Vector3.up * 10,
+                            Vector3.down, out hit, 20))
+                        {
+                            moveTargets[i] = hit.point;
+                        }
+                    }
                 }
 
                 if (!grounded[i])
                 {
-                    Vector3 heightLessTarget = restTargets[i] + transform.position;
-                
-                    Vector3 overshoot = Vector3.zero;
-                    if (state != State.Idle) overshoot = mechDirection * targetOvershoot * targetWidth;
-                    // Implement hole detection
-                    RaycastHit hit;
-                    if (Physics.Raycast(
-                        heightLessTarget +
-                        overshoot +
-                        Vector3.up * 10,
-                        Vector3.down, out hit, 20))
-                    {
-                        moveTargets[i] = hit.point;
-                    }
-
                     float stepDistance = footVelocity * Time.deltaTime;
                     Vector3 displacementVector = moveTargets[i] - feetPositions[i];
                     if (displacementVector.magnitude > stepDistance)

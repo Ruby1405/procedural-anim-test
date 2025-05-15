@@ -666,7 +666,7 @@ MonoBehaviour:
   - {x: -1.4, y: 0, z: 2}
   pathTarget: {x: -0.87716126, y: 0.8346658, z: -0.96397173}
   pathTargetRadius: 1
-  mechVelocity: 3
+  mechVelocity: 2
   state: 0
   edit: 0
   showRestTargets: 0
