@@ -12,13 +12,19 @@ public class Locomotor : MonoBehaviour
     public const int LEG_COUNT = 6;
     private Vector3[] feetPositions = new Vector3[LEG_COUNT];
     public Vector3[] restTargets = new Vector3[LEG_COUNT];
+    public bool edit = false;
     private Vector3[] moveTargets = new Vector3[LEG_COUNT];
+    [SerializeField] private float maxAltitudeDeviation = 1.0f;
     private bool[] grounded = new bool[LEG_COUNT];
+
+    [SerializeField] private float coreHeight = 0.5f;
+
+    [Header("Pathfinding")]
     public Vector3 pathTarget = new Vector3(0, 0, 0);
     [SerializeField] private float pathTargetRadius = 0.5f;
     [SerializeField] private float mechVelocity = 0.5f;
     [SerializeField] private State state = State.Idle;
-    public bool edit = false;
+
     [Header("Gizmos")]
     [SerializeField] private bool showRestTargets = false;
     [SerializeField] private bool showMoveTargets = false;
@@ -34,7 +40,12 @@ public class Locomotor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float distanceToPT = (pathTarget - transform.position).magnitude;
+        float distanceToPT = new Vector3(
+            pathTarget.x - transform.position.x,
+            0f,
+            pathTarget.z - transform.position.z
+            ).magnitude;
+
         if (distanceToPT > pathTargetRadius) state = State.Walking;
         else state = State.Idle;
 
@@ -58,7 +69,11 @@ public class Locomotor : MonoBehaviour
 
         for (int i = 0; i < LEG_COUNT; i++)
         {
-            float distance = ((restTargets[i]  + transform.position) - feetPositions[i]).magnitude;
+            float distance = new Vector3(
+                restTargets[i].x + transform.position.x - feetPositions[i].x,
+                restTargets[i].y - feetPositions[i].y,
+                restTargets[i].z + transform.position.z - feetPositions[i].z
+                ).magnitude;
             if (distance > targetWidth || !grounded[i])
             {
                 if (grounded[i])
@@ -67,8 +82,8 @@ public class Locomotor : MonoBehaviour
 
                     if (!grounded[i])
                     {
-                        Vector3 heightlessTarget = restTargets[i] + transform.position;
-                    
+                        Vector3 heightlessTarget = restTargets[i] + Vector3.Scale(transform.position, new(1, 0, 1));
+
                         Vector3 overshoot = Vector3.zero;
                         if (state != State.Idle) overshoot = mechDirection * targetOvershoot * targetWidth;
                         // Implement hole detection
@@ -76,8 +91,8 @@ public class Locomotor : MonoBehaviour
                         if (Physics.Raycast(
                             heightlessTarget +
                             overshoot +
-                            Vector3.up * 10,
-                            Vector3.down, out hit, 20))
+                            Vector3.up * maxAltitudeDeviation,
+                            Vector3.down, out hit, maxAltitudeDeviation * 2))
                         {
                             moveTargets[i] = hit.point;
                         }
@@ -96,6 +111,7 @@ public class Locomotor : MonoBehaviour
                     {
                         feetPositions[i] = moveTargets[i];
                         grounded[i] = true;
+                        restTargets[i].y = feetPositions[i].y;
                     }
                 }
             }
@@ -104,6 +120,20 @@ public class Locomotor : MonoBehaviour
                 grounded[i] = true;
             }
         }
+
+        short groundedCount = 0;
+        float altitudeSum = 0;
+        for (int i = 0; i < LEG_COUNT; i++)
+        {
+            if (!grounded[i]) continue;
+            groundedCount++;
+            altitudeSum += feetPositions[i].y;
+        }
+        transform.position = new Vector3(
+            transform.position.x,
+            altitudeSum / groundedCount + coreHeight,
+            transform.position.z
+        );
     }
 
     void DrawCircle(Vector3 center, float radius, Color color)
@@ -132,13 +162,31 @@ public class Locomotor : MonoBehaviour
 
         for (int i = 0; i < LEG_COUNT; i++)
         {
-            Gizmos.color = grounded[i]? Color.blue : Color.cyan;
+            Gizmos.color = grounded[i] ? Color.blue : Color.cyan;
             Gizmos.DrawSphere(feetPositions[i], 0.2f);
 
             if (!showMoveTargets) continue;
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(restTargets[i] + transform.position, feetPositions[i]);
+            Gizmos.DrawLine(restTargets[i] + Vector3.Scale(transform.position, new (1,0,1)), feetPositions[i]);
             Gizmos.DrawSphere(moveTargets[i], 0.1f);
+
+            // Show ray cast targets
+            if (false) continue;
+            Gizmos.color = Color.yellow;
+
+            Vector3 heightlessTarget = restTargets[i] + Vector3.Scale(transform.position, new (1,0,1));
+
+            Vector3 overshoot = Vector3.zero;
+            if (state != State.Idle) overshoot = mechDirection * targetOvershoot * targetWidth;
+            
+            Gizmos.DrawLine(
+                heightlessTarget +
+                overshoot +
+                Vector3.up * maxAltitudeDeviation,
+                heightlessTarget +
+                overshoot +
+                Vector3.down * maxAltitudeDeviation
+                );
         }
 
     }
