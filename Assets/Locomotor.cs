@@ -31,13 +31,6 @@ public class Locomotor : MonoBehaviour
 
     private Vector3 mechDirection = new(0f,0f,0f);
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
         float distanceToPT = new Vector3(
