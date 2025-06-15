@@ -868,16 +868,16 @@ MonoBehaviour:
   targetOvershoot: 0.901
   footVelocity: 7
   restTargets:
-  - {x: 1.4, y: 0, z: 2}
-  - {x: 2, y: 0, z: 0}
-  - {x: 1.4, y: 0, z: -2}
-  - {x: -1.4, y: 0, z: -2}
-  - {x: -2, y: 0, z: 0}
-  - {x: -1.4, y: 0, z: 2}
+  - {x: 1.4, y: -2.0337466e-16, z: 2}
+  - {x: 2, y: 1, z: 0}
+  - {x: 1.4, y: 1, z: -2}
+  - {x: -1.4, y: 1, z: -2}
+  - {x: -2, y: 1, z: 0}
+  - {x: -1.4, y: -2.0337465e-16, z: 2}
   edit: 0
   maxAltitudeDeviation: 1.42
   coreHeight: 1.5
-  pathTarget: {x: -3.4922433, y: 0, z: 6.3215375}
+  pathTarget: {x: -3.4922433, y: 0, z: 7.4550743}
   pathTargetRadius: 1
   mechVelocity: 2
   state: 0
@@ -892,7 +892,7 @@ Transform:
   m_GameObject: {fileID: 1123867164}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.4049883, y: 1.5, z: 5.3376894}
+  m_LocalPosition: {x: -3.4921765, y: 2.1666667, z: 7.1591806}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1108,6 +1108,57 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1288686648}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1393146119
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1393146121}
+  - component: {fileID: 1393146120}
+  m_Layer: 0
+  m_Name: MathTester
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1393146120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1393146119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d88b8480add45f54d812bbf43f5b6495, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Pos0: {x: 5.249891, y: 0.31279552, z: -2.2816226}
+  Pos1: {x: 5.235529, y: 0.8103513, z: -0.21046364}
+  ShowVelocities: 0
+  Vel0: {x: 5.395577, y: 0, z: -2.0344806}
+  Vel1: {x: 5.49893, y: 1, z: -1.0375249}
+  GroundClearance: 1
+  obstacleMargin: 0.1
+--- !u!4 &1393146121
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1393146119}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1482678703
 GameObject:
   m_ObjectHideFlags: 0
@@ -1791,3 +1842,4 @@ SceneRoots:
   - {fileID: 705507995}
   - {fileID: 1123867166}
   - {fileID: 1526843449}
+  - {fileID: 1393146121}

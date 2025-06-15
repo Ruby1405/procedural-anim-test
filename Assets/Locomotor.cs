@@ -28,8 +28,10 @@ public class Locomotor : MonoBehaviour
     [Header("Gizmos")]
     [SerializeField] private bool showRestTargets = false;
     [SerializeField] private bool showMoveTargets = false;
+    // [SerializeField] private List<Vector3> traceHits = new List<Vector3>();
+    // [SerializeField] private List<Vector3> traceOrigins = new List<Vector3>();
 
-    private Vector3 mechDirection = new(0f,0f,0f);
+    private Vector3 mechDirection = new(0f, 0f, 0f);
 
     void Update()
     {
@@ -78,7 +80,7 @@ public class Locomotor : MonoBehaviour
                         Vector3 heightlessTarget = restTargets[i] + Vector3.Scale(transform.position, new(1, 0, 1));
 
                         Vector3 overshoot = Vector3.zero;
-                        if (state != State.Idle) overshoot = mechDirection * targetOvershoot * targetWidth;
+                        if (state != State.Idle) overshoot = Vector3.Scale(mechDirection, new(1,0,1)) * targetOvershoot * targetWidth;
                         // Implement hole detection
                         RaycastHit hit;
                         if (Physics.Raycast(
@@ -88,6 +90,8 @@ public class Locomotor : MonoBehaviour
                             Vector3.down, out hit, maxAltitudeDeviation * 2))
                         {
                             moveTargets[i] = hit.point;
+                            // traceHits.Add(hit.point);
+                            // traceOrigins.Add(heightlessTarget + overshoot + Vector3.up * maxAltitudeDeviation);
                         }
                     }
                 }
@@ -150,7 +154,7 @@ public class Locomotor : MonoBehaviour
         if (showRestTargets)
             foreach (var target in restTargets)
             {
-                DrawCircle(target + Vector3.Scale(transform.position, new (1,0,1)), targetWidth, Color.red);
+                DrawCircle(target + Vector3.Scale(transform.position, new(1, 0, 1)), targetWidth, Color.red);
             }
 
         for (int i = 0; i < LEG_COUNT; i++)
@@ -160,18 +164,18 @@ public class Locomotor : MonoBehaviour
 
             if (!showMoveTargets) continue;
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(restTargets[i] + Vector3.Scale(transform.position, new (1,0,1)), feetPositions[i]);
+            Gizmos.DrawLine(restTargets[i] + Vector3.Scale(transform.position, new(1, 0, 1)), feetPositions[i]);
             Gizmos.DrawSphere(moveTargets[i], 0.1f);
 
             // Show ray cast targets
             if (false) continue;
             Gizmos.color = Color.yellow;
 
-            Vector3 heightlessTarget = restTargets[i] + Vector3.Scale(transform.position, new (1,0,1));
+            Vector3 heightlessTarget = restTargets[i] + Vector3.Scale(transform.position, new(1, 0, 1));
 
             Vector3 overshoot = Vector3.zero;
             if (state != State.Idle) overshoot = mechDirection * targetOvershoot * targetWidth;
-            
+
             Gizmos.DrawLine(
                 heightlessTarget +
                 overshoot +
@@ -181,6 +185,16 @@ public class Locomotor : MonoBehaviour
                 Vector3.down * maxAltitudeDeviation
                 );
         }
+        // foreach (var hit in traceHits)
+        // {
+        //     Gizmos.color = Color.yellow;
+        //     Gizmos.DrawSphere(hit, 0.1f);
+        // }
+        // foreach (var hit in traceOrigins)
+        // {
+        //     Gizmos.color = new Color(1f, 0.5f, 0);
+        //     Gizmos.DrawSphere(hit, 0.1f);
+        // }
 
     }
 }
