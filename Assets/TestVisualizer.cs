@@ -118,30 +118,62 @@ public class TestVisualizer : MonoBehaviour
         }
 
         Vector3 pt = topCollisionPoint + relY * obstacleMargin;
-        float c = 0.5f;
+        float controlY = Vector3.Dot(topCollisionPoint - Pos0, relY);
+        // float controlX = Vector3.Dot(pt - Pos0, relX);
+
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawSphere(Pos0 + Vector3.up * controlY, 0.05f);
+        // Gizmos.DrawSphere(pt + relX * -controlX, 0.05f);
+        Gizmos.DrawSphere(pt, 0.05f);
+        // Gizmos.DrawSphere(pt + relX * controlX, 0.05f);
+        Gizmos.DrawSphere(Pos1 + Vector3.up * controlY, 0.05f);
+        Gizmos.color = Color.black;
+        Gizmos.DrawLineStrip(new Vector3[]
+        {
+            Pos0,
+            Pos0 + Vector3.up * controlY,
+            // pt + relX * -controlX,
+            pt,
+            // pt + relX * controlX,
+            Pos1 + Vector3.up * controlY,
+            Pos1
+        }, false);
+
         for (float i = 0; i < 1; i += 0.1f)
         {
+            // Vector3 a = Vector3.Lerp(
+            //     Vector3.Lerp(
+            //         Vector3.Lerp(Pos0, Pos0 + Vector3.up * controlY, i),
+            //         Vector3.Lerp(Pos0 + Vector3.up * controlY, pt + relX * -controlX, i),
+            //         i),
+            //     Vector3.Lerp(
+            //         Vector3.Lerp(Pos0 + Vector3.up * controlY, pt + relX * -controlX, i),
+            //         Vector3.Lerp(pt + relX * -controlX, pt, i),
+            //         i),
+            //     i
+            // );
+
+            // Vector3 b = Vector3.Lerp(
+            //     Vector3.Lerp(
+            //         Vector3.Lerp(Pos0, Pos0 + Vector3.up * controlY, i + 0.1f),
+            //         Vector3.Lerp(Pos0 + Vector3.up * controlY, pt + relX * -controlX, i + 0.1f),
+            //         i + 0.1f),
+            //     Vector3.Lerp(
+            //         Vector3.Lerp(Pos0 + Vector3.up * controlY, pt + relX * -controlX, i + 0.1f),
+            //         Vector3.Lerp(pt + relX * -controlX, pt, i + 0.1f),
+            //         i + 0.1f),
+            //     i + 0.1f
+            // );
+
             Vector3 a = Vector3.Lerp(
-                Vector3.Lerp(
-                    Vector3.Lerp(Pos0, Pos0 + Vector3.up * c, i),
-                    Vector3.Lerp(Pos0 + Vector3.up * c, pt + relX * -0.1f, i),
-                    i),
-                Vector3.Lerp(
-                    Vector3.Lerp(Pos0 + Vector3.up * c, pt + relX * -0.1f, i),
-                    Vector3.Lerp(pt + relX * -0.1f, pt, i),
-                    i),
+                Vector3.Lerp(Pos0, Pos0 + Vector3.up * controlY, i),
+                Vector3.Lerp(Pos0 + Vector3.up * controlY, pt, i),
                 i
             );
 
             Vector3 b = Vector3.Lerp(
-                Vector3.Lerp(
-                    Vector3.Lerp(Pos0, Pos0 + Vector3.up * c, i + 0.1f),
-                    Vector3.Lerp(Pos0 + Vector3.up * c, pt + relX * -0.1f, i + 0.1f),
-                    i + 0.1f),
-                Vector3.Lerp(
-                    Vector3.Lerp(Pos0 + Vector3.up * c, pt + relX * -0.1f, i + 0.1f),
-                    Vector3.Lerp(pt + relX * -0.1f, pt, i + 0.1f),
-                    i + 0.1f),
+                Vector3.Lerp(Pos0, Pos0 + Vector3.up * controlY, i + 0.1f),
+                Vector3.Lerp(Pos0 + Vector3.up * controlY, pt, i + 0.1f),
                 i + 0.1f
             );
 
@@ -150,27 +182,39 @@ public class TestVisualizer : MonoBehaviour
         }
         for (float i = 0; i < 1; i += 0.1f)
         {
+            // Vector3 a = Vector3.Lerp(
+            //     Vector3.Lerp(
+            //         Vector3.Lerp(pt, pt + relX * (1-controlX), i),
+            //         Vector3.Lerp(pt + relX * (1-controlX), Pos1 + Vector3.up * controlY, i),
+            //         i),
+            //     Vector3.Lerp(
+            //         Vector3.Lerp(pt + relX * (1-controlX), Pos1 + Vector3.up * controlY, i),
+            //         Vector3.Lerp(Pos1 + Vector3.up * controlY, Pos1, i),
+            //         i),
+            //     i
+            // );
+
+            // Vector3 b = Vector3.Lerp(
+            //     Vector3.Lerp(
+            //         Vector3.Lerp(pt, pt + relX * (1-controlX), i + 0.1f),
+            //         Vector3.Lerp(pt + relX * (1-controlX), Pos1 + Vector3.up * controlY, i + 0.1f),
+            //         i + 0.1f),
+            //     Vector3.Lerp(
+            //         Vector3.Lerp(pt + relX * (1-controlX), Pos1 + Vector3.up * controlY, i + 0.1f),
+            //         Vector3.Lerp(Pos1 + Vector3.up * controlY, Pos1, i + 0.1f),
+            //         i + 0.1f),
+            //     i + 0.1f
+            // );
+
             Vector3 a = Vector3.Lerp(
-                Vector3.Lerp(
-                    Vector3.Lerp(pt, pt + relX * 0.1f, i),
-                    Vector3.Lerp(pt + relX * 0.1f, Pos1 + Vector3.up * c, i),
-                    i),
-                Vector3.Lerp(
-                    Vector3.Lerp(pt + relX * 0.1f, Pos1 + Vector3.up * c, i),
-                    Vector3.Lerp(Pos1 + Vector3.up * c, Pos1, i),
-                    i),
+                Vector3.Lerp(pt, Pos1 + Vector3.up * controlY, i),
+                Vector3.Lerp(Pos1 + Vector3.up * controlY, Pos1, i),
                 i
             );
 
             Vector3 b = Vector3.Lerp(
-                Vector3.Lerp(
-                    Vector3.Lerp(pt, pt + relX * 0.1f, i + 0.1f),
-                    Vector3.Lerp(pt + relX * 0.1f, Pos1 + Vector3.up * c, i + 0.1f),
-                    i + 0.1f),
-                Vector3.Lerp(
-                    Vector3.Lerp(pt + relX * 0.1f, Pos1 + Vector3.up * c, i + 0.1f),
-                    Vector3.Lerp(Pos1 + Vector3.up * c, Pos1, i + 0.1f),
-                    i + 0.1f),
+                Vector3.Lerp(pt, Pos1 + Vector3.up * controlY, i + 0.1f),
+                Vector3.Lerp(Pos1 + Vector3.up * controlY, Pos1, i + 0.1f),
                 i + 0.1f
             );
             
