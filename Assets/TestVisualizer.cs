@@ -16,6 +16,7 @@ public class TestVisualizer : MonoBehaviour
     private Vector3 relX;
     private Vector3 relY;
     public List<(Vector3, Vector3, Color)> displayVectors = new List<(Vector3, Vector3, Color)>();
+    public FootPath footPath;
 
     // Start is called before the first frame update
     void Start()
@@ -98,6 +99,8 @@ public class TestVisualizer : MonoBehaviour
         }
 
         topCollisionPoint = BinaryHitScan(0, 0, true);
+
+        footPath = new FootPath(Pos0 + new Vector3(0.2f,0,0), Pos1 + new Vector3(0.2f,0,0));
     }
 
     void OnDrawGizmos()
@@ -221,6 +224,7 @@ public class TestVisualizer : MonoBehaviour
             Gizmos.color = Color.magenta;
             Gizmos.DrawLine(a, b);
         }
+        footPath.Draw();
     }
 }
 
