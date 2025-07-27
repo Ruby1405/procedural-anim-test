@@ -16,8 +16,11 @@ public class FootPath
 
     public FootPath(Vector3 currentPos, Vector3 destinationPos)
     {
+        Pos0 = currentPos;
+        Pos2 = destinationPos;
+
         // Straight path
-        Vector3 diff = destinationPos - currentPos;
+        Vector3 diff = Pos2 - Pos0;
 
         // Perpendicular vector
         Vector3 cross = Vector3.Cross(diff, Vector3.up);
@@ -120,8 +123,8 @@ public class FootPath
             );
 
             Vector3 b = Vector3.Lerp(
-                Vector3.Lerp(Pos0, Pos0 + Vector3.up * climb, t / curveJoint),
-                Vector3.Lerp(Pos0 + Vector3.up * climb, Pos1, t / curveJoint),
+                Vector3.Lerp(Pos0, Pos0 + Vector3.up * climb, t / curveJoint + 0.1f),
+                Vector3.Lerp(Pos0 + Vector3.up * climb, Pos1, t / curveJoint + 0.1f),
                 t / curveJoint + 0.1f
             );
 
@@ -138,8 +141,8 @@ public class FootPath
             );
 
             Vector3 b = Vector3.Lerp(
-                Vector3.Lerp(Pos1, Pos2 + Vector3.up * climb, (t - curveJoint) / (1 - curveJoint)),
-                Vector3.Lerp(Pos2 + Vector3.up * climb, Pos1, (t - curveJoint) / (1 - curveJoint)),
+                Vector3.Lerp(Pos1, Pos2 + Vector3.up * climb, (t - curveJoint) / (1 - curveJoint) + 0.1f),
+                Vector3.Lerp(Pos2 + Vector3.up * climb, Pos1, (t - curveJoint) / (1 - curveJoint) + 0.1f),
                 (t - curveJoint) / (1 - curveJoint) + 0.1f
             );
 

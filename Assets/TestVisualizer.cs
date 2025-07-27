@@ -100,7 +100,7 @@ public class TestVisualizer : MonoBehaviour
 
         topCollisionPoint = BinaryHitScan(0, 0, true);
 
-        footPath = new FootPath(Pos0 + new Vector3(0.2f,0,0), Pos1 + new Vector3(0.2f,0,0));
+        footPath = new FootPath(Pos0 + new Vector3(0.3f,0,0), Pos1 + new Vector3(0.3f,0,0));
     }
 
     void OnDrawGizmos()
@@ -114,11 +114,11 @@ public class TestVisualizer : MonoBehaviour
 
         Gizmos.DrawSphere(topCollisionPoint, 0.03f);
 
-        foreach (var (start, end, color) in displayVectors)
-        {
-            Gizmos.color = color;
-            Gizmos.DrawLine(start, end);
-        }
+        // foreach (var (start, end, color) in displayVectors)
+        // {
+        //     Gizmos.color = color;
+        //     Gizmos.DrawLine(start, end);
+        // }
 
         Vector3 pt = topCollisionPoint + relY * obstacleMargin;
         float controlY = Vector3.Dot(topCollisionPoint - Pos0, relY);
