@@ -55,7 +55,7 @@ public class FootPath
                 else
                 {
                     Vector3 p = BinaryHitScan(iteration, y, newHit);
-                    return p == Vector3.zero ? hitInfo.point : p;
+                    return p == Vector3.zero ? hitInfo.point : Pos0 + relX * (diff.magnitude/2) + relY * GroundClearance;
                 }
             }
             else
@@ -78,7 +78,7 @@ public class FootPath
                 else
                 {
                     Vector3 p = BinaryHitScan(iteration, y, newHit);
-                    return p == Vector3.zero ? hitInfo.point : p;
+                    return p == Vector3.zero ? hitInfo.point : Pos0 + relX * (diff.magnitude/2) + relY * GroundClearance;
                 }
             }
         }

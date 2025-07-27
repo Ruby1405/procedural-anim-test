@@ -1137,8 +1137,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d88b8480add45f54d812bbf43f5b6495, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Pos0: {x: 5.249891, y: 0.31279552, z: -2.2816226}
-  Pos1: {x: 5.235529, y: 0.8103513, z: -0.21046364}
+  Pos0: {x: 5.249891, y: 0.4297362, z: -2.1265657}
+  Pos1: {x: 5.0959954, y: 0.8113629, z: -0.48102164}
   ShowVelocities: 0
   Vel0: {x: 5.395577, y: 0, z: -2.0344806}
   Vel1: {x: 5.49893, y: 1, z: -1.0375249}
