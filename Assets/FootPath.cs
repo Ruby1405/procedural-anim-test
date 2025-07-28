@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Collections.Generic;
 
 [Serializable]
 public class FootPath
@@ -7,12 +8,15 @@ public class FootPath
     public Vector3 Pos0 { get; private set; }
     public Vector3 Pos1 { get; private set; }
     public Vector3 Pos2 { get; private set; }
+    [SerializeField]
     private float curveJoint;
     private Vector3 relX;
     private Vector3 relY;
     private float climb;
     public static float GroundClearance = 1f;
     public static float ObstacleMargin = 0.1f;
+    public Vector3 tp; // Top collision point
+    public List<(Vector3, Vector3, Color)> displayVectors = new List<(Vector3, Vector3, Color)>();
 
     public FootPath(Vector3 currentPos, Vector3 destinationPos)
     {
@@ -46,7 +50,7 @@ public class FootPath
                     diff.magnitude
                     );
 
-                // displayVectors.Add((Pos0 + relY * y, newHit ? hitInfo.point : Pos1 + relY * y, newHit ? Color.red : Color.green));
+                displayVectors.Add((Pos0 + relY * y, newHit ? hitInfo.point : Pos2 + relY * y, newHit ? Color.red : Color.green));
 
                 if (iteration > 5)
                 {
@@ -55,7 +59,8 @@ public class FootPath
                 else
                 {
                     Vector3 p = BinaryHitScan(iteration, y, newHit);
-                    return p == Vector3.zero ? hitInfo.point : Pos0 + relX * (diff.magnitude/2) + relY * GroundClearance;
+                    return p == Vector3.zero ? hitInfo.point : p;
+                    // return p != Vector3.zero ? hitInfo.point : Pos0 + relX * (diff.magnitude / 2) + relY * GroundClearance;
                 }
             }
             else
@@ -69,7 +74,7 @@ public class FootPath
                     diff.magnitude
                     );
 
-                // displayVectors.Add((Pos0 + relY * y, newHit ? hitInfo.point : Pos1 + relY * y, newHit ? Color.red : Color.green));
+                displayVectors.Add((Pos0 + relY * y, newHit ? hitInfo.point : Pos2 + relY * y, newHit ? Color.red : Color.green));
 
                 if (iteration > 5)
                 {
@@ -78,12 +83,14 @@ public class FootPath
                 else
                 {
                     Vector3 p = BinaryHitScan(iteration, y, newHit);
-                    return p == Vector3.zero ? hitInfo.point : Pos0 + relX * (diff.magnitude/2) + relY * GroundClearance;
+                    return p == Vector3.zero ? hitInfo.point : p;
+                    // return p != Vector3.zero ? hitInfo.point : Pos0 + relX * (diff.magnitude / 2) + relY * GroundClearance;
                 }
             }
         }
 
         Vector3 topCollisionPoint = BinaryHitScan(0, 0, true);
+        tp = topCollisionPoint;
 
         // Middle point of curve
         Pos1 = topCollisionPoint + relY * ObstacleMargin;
@@ -92,7 +99,7 @@ public class FootPath
         climb = Vector3.Dot(topCollisionPoint - Pos0, relY);
 
         // At what input t interpolation should switch from one curve to the next
-        curveJoint = Vector3.Dot(Pos1 - Pos0, relX);
+        curveJoint = Vector3.Dot(Pos1 - Pos0, relX) / diff.magnitude;
     }
 
     public Vector3 GetPosition(float t)
@@ -107,47 +114,73 @@ public class FootPath
         }
         return Vector3.Lerp(
             Vector3.Lerp(Pos1, Pos2 + Vector3.up * climb, (t - curveJoint) / (1 - curveJoint)),
-            Vector3.Lerp(Pos2 + Vector3.up * climb, Pos1, (t - curveJoint) / (1 - curveJoint)),
+            Vector3.Lerp(Pos2 + Vector3.up * climb, Pos2, (t - curveJoint) / (1 - curveJoint)),
             (t - curveJoint) / (1 - curveJoint)
         );
     }
 
     public void Draw()
     {
-        for (float t = 0; t < 1; t += 0.1f)
+        for (float t = 0; t < 1; t += 0.05f)
         {
-            Vector3 a = Vector3.Lerp(
-                Vector3.Lerp(Pos0, Pos0 + Vector3.up * climb, t / curveJoint),
-                Vector3.Lerp(Pos0 + Vector3.up * climb, Pos1, t / curveJoint),
-                t / curveJoint
-            );
-
-            Vector3 b = Vector3.Lerp(
-                Vector3.Lerp(Pos0, Pos0 + Vector3.up * climb, t / curveJoint + 0.1f),
-                Vector3.Lerp(Pos0 + Vector3.up * climb, Pos1, t / curveJoint + 0.1f),
-                t / curveJoint + 0.1f
-            );
+            Vector3 a = GetPosition(t);
+            Vector3 b = GetPosition(t + 0.05f);
 
             Gizmos.color = Color.green;
             Gizmos.DrawLine(a, b);
         }
+        // for (float t = 0; t < 1; t += 0.1f)
+        // {
+        //     Vector3 a = Vector3.Lerp(
+        //         Vector3.Lerp(Pos0, Pos0 + Vector3.up * climb, t / curveJoint),
+        //         Vector3.Lerp(Pos0 + Vector3.up * climb, Pos1, t / curveJoint),
+        //         t / curveJoint
+        //     );
 
-        for (float t = 0; t < 1; t += 0.1f)
-        {
-            Vector3 a = Vector3.Lerp(
-                Vector3.Lerp(Pos1, Pos2 + Vector3.up * climb, (t - curveJoint) / (1 - curveJoint)),
-                Vector3.Lerp(Pos2 + Vector3.up * climb, Pos1, (t - curveJoint) / (1 - curveJoint)),
-                (t - curveJoint) / (1 - curveJoint)
-            );
+        //     Vector3 b = Vector3.Lerp(
+        //         Vector3.Lerp(Pos0, Pos0 + Vector3.up * climb, t / curveJoint + 0.1f),
+        //         Vector3.Lerp(Pos0 + Vector3.up * climb, Pos1, t / curveJoint + 0.1f),
+        //         t / curveJoint + 0.1f
+        //     );
 
-            Vector3 b = Vector3.Lerp(
-                Vector3.Lerp(Pos1, Pos2 + Vector3.up * climb, (t - curveJoint) / (1 - curveJoint) + 0.1f),
-                Vector3.Lerp(Pos2 + Vector3.up * climb, Pos1, (t - curveJoint) / (1 - curveJoint) + 0.1f),
-                (t - curveJoint) / (1 - curveJoint) + 0.1f
-            );
+        //     Gizmos.color = Color.green;
+        //     Gizmos.DrawLine(a, b);
+        // }
 
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(a, b);
-        }
+        // for (float t = 0; t < 1; t += 0.1f)
+        // {
+        //     Vector3 a = Vector3.Lerp(
+        //         Vector3.Lerp(Pos1, Pos2 + Vector3.up * climb, (t - curveJoint) / (1 - curveJoint)),
+        //         Vector3.Lerp(Pos2 + Vector3.up * climb, Pos1, (t - curveJoint) / (1 - curveJoint)),
+        //         (t - curveJoint) / (1 - curveJoint)
+        //     );
+
+        //     Vector3 b = Vector3.Lerp(
+        //         Vector3.Lerp(Pos1, Pos2 + Vector3.up * climb, (t - curveJoint) / (1 - curveJoint) + 0.1f),
+        //         Vector3.Lerp(Pos2 + Vector3.up * climb, Pos2, (t - curveJoint) / (1 - curveJoint) + 0.1f),
+        //         (t - curveJoint) / (1 - curveJoint) + 0.1f
+        //     );
+
+        //     Gizmos.color = Color.green;
+        //     Gizmos.DrawLine(a, b);
+        // }
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawSphere(Pos0, 0.03f);
+        Gizmos.DrawSphere(Pos1, 0.03f);
+        Gizmos.DrawSphere(Pos2, 0.03f);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(tp, 0.03f);
+
+        // Gizmos.color = Color.yellow;
+        // Gizmos.DrawLine(Pos0, Pos1);
+        // Gizmos.DrawLine(Pos0, Pos0 + relX * Vector3.Dot(Pos1 - Pos0, relX));
+
+        // foreach (var (start, end, color) in displayVectors)
+        // {
+        //     Gizmos.color = color;
+        //     Gizmos.DrawLine(start, end);
+        // }
     }
 }

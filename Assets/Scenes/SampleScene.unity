@@ -1137,13 +1137,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d88b8480add45f54d812bbf43f5b6495, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Pos0: {x: 5.249891, y: 0.4297362, z: -2.1265657}
-  Pos1: {x: 5.0959954, y: 0.8113629, z: -0.48102164}
+  Pos0: {x: 5.0984583, y: 0.38813987, z: -2.1064835}
+  Pos1: {x: 5.0959954, y: 0.967856, z: -0.3300708}
   ShowVelocities: 0
   Vel0: {x: 5.395577, y: 0, z: -2.0344806}
   Vel1: {x: 5.49893, y: 1, z: -1.0375249}
   GroundClearance: 1
   obstacleMargin: 0.1
+  footPath:
+    curveJoint: 0.2600227
+    tp: {x: 5.39802, y: 0.9845005, z: -1.79}
+  inter: 0.345
 --- !u!4 &1393146121
 Transform:
   m_ObjectHideFlags: 0

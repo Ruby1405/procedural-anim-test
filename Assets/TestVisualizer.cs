@@ -17,6 +17,7 @@ public class TestVisualizer : MonoBehaviour
     private Vector3 relY;
     public List<(Vector3, Vector3, Color)> displayVectors = new List<(Vector3, Vector3, Color)>();
     public FootPath footPath;
+    [Range(0, 1)] public float inter = 0f;
 
     // Start is called before the first frame update
     void Start()
@@ -220,11 +221,14 @@ public class TestVisualizer : MonoBehaviour
                 Vector3.Lerp(Pos1 + Vector3.up * controlY, Pos1, i + 0.1f),
                 i + 0.1f
             );
-            
+
             Gizmos.color = Color.magenta;
             Gizmos.DrawLine(a, b);
         }
+
         footPath.Draw();
+        Gizmos.color = Color.blue;
+        Gizmos.DrawSphere(footPath.GetPosition(inter), 0.05f);
     }
 }
 
