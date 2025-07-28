@@ -92,6 +92,11 @@ public class FootPath
         }
 
         Vector3 topCollisionPoint = BinaryHitScan(0, 0, true);
+        if (topCollisionPoint == Vector3.zero)
+        {
+            topCollisionPoint = (Pos0 + Pos2) * 0.5f + relY * (length / 3);
+        }
+
         tp = topCollisionPoint;
 
         // Middle point of curve
@@ -121,11 +126,19 @@ public class FootPath
         );
     }
 
-    public Vector3 Move(float velocity)
+    public Vector3 Move(float velocity, out bool finished)
     {
+        finished = false;
+        float prog0 = progress;
         progress += velocity * Time.deltaTime;
-        if (progress > length) progress = length;
+        float prog1 = progress;
+        if (progress >= length)
+        {
+            progress = length;
+            finished = true;
+        }
 
+        
         float t = progress / length;
         return GetPosition(t);
     }

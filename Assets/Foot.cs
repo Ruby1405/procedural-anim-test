@@ -81,7 +81,8 @@ public class Foot
             }
 
             // If the foot is not grounded, move it along the path
-            path.Move(velocity);
+            Position = path.Move(velocity, out bool finished);
+            Grounded = finished;
         }
     }
 
@@ -89,12 +90,9 @@ public class Foot
         Vector3 parentPosition,
         State state,
         Vector3 direction,
-        bool showMoveTargets,
-        bool showRestTargets
+        bool showMoveTargets
         )
     {
-        if (showRestTargets) Locomotor.DrawCircle(restTarget + Vector3.Scale(parentPosition, new(1, 0, 1)), targetWidth, Color.red);
-
         Gizmos.color = Grounded ? Color.blue : Color.cyan;
         Gizmos.DrawSphere(Position, 0.2f);
 

@@ -38,12 +38,12 @@ public class Locomotor : MonoBehaviour
         Foot.targetOvershoot = targetOvershoot;
         Foot.velocity = footVelocity;
         
-        feet[0] = new Foot(new Vector3(0.5f, 0, 0.5f));
-        feet[1] = new Foot(new Vector3(0.5f, 0, -0.5f));
-        feet[2] = new Foot(new Vector3(-0.5f, 0, 0.5f));
-        feet[3] = new Foot(new Vector3(-0.5f, 0, -0.5f));
-        feet[4] = new Foot(new Vector3(0, 0, 0.5f));
-        feet[5] = new Foot(new Vector3(0, 0, -0.5f));
+        feet[0] = new Foot(new Vector3(1.4f, 0, 2f));
+        feet[1] = new Foot(new Vector3(2f, 0, 0f));
+        feet[2] = new Foot(new Vector3(1.4f, 0, -2f));
+        feet[3] = new Foot(new Vector3(-1.4f, 0, -2f));
+        feet[4] = new Foot(new Vector3(-2, 0, 0f));
+        feet[5] = new Foot(new Vector3(-1.4f, 0, 2f));
     }
 
     void Update()
@@ -125,8 +125,10 @@ public class Locomotor : MonoBehaviour
                 transform.position,
                 state,
                 mechDirection,
-                showMoveTargets,
-                showRestTargets);
+                showMoveTargets);
+
+            if (showRestTargets)
+                DrawCircle(foot.restTarget + Vector3.Scale(transform.position, new(1, 0, 1)), targetWidth, Color.red);
         }
     }
 }

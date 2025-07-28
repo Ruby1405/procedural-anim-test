@@ -867,22 +867,22 @@ MonoBehaviour:
   targetWidth: 0.22
   targetOvershoot: 0.901
   footVelocity: 7
-  restTargets:
-  - {x: 1.4, y: -2.0337466e-16, z: 2}
-  - {x: 2, y: 1, z: 0}
-  - {x: 1.4, y: 1, z: -2}
-  - {x: -1.4, y: 1, z: -2}
-  - {x: -2, y: 1, z: 0}
-  - {x: -1.4, y: -2.0337465e-16, z: 2}
+  feet:
+  - restTarget: {x: 1.4, y: 0, z: 2}
+  - restTarget: {x: 2, y: 0, z: 0}
+  - restTarget: {x: 1.4, y: 0, z: -2}
+  - restTarget: {x: -1.4, y: 0, z: -2}
+  - restTarget: {x: -2, y: 0, z: 0}
+  - restTarget: {x: -1.4, y: 0, z: 2}
   edit: 0
   maxAltitudeDeviation: 1.42
   coreHeight: 1.5
-  pathTarget: {x: -3.4922433, y: 0, z: 7.4550743}
+  pathTarget: {x: -4.292672, y: 0, z: -0.68102074}
   pathTargetRadius: 1
   mechVelocity: 2
   state: 0
-  showRestTargets: 1
-  showMoveTargets: 1
+  showRestTargets: 0
+  showMoveTargets: 0
 --- !u!4 &1123867166
 Transform:
   m_ObjectHideFlags: 0
@@ -892,7 +892,7 @@ Transform:
   m_GameObject: {fileID: 1123867164}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.4921765, y: 2.1666667, z: 7.1591806}
+  m_LocalPosition: {x: -4.346821, y: 1.5, z: -0.41476232}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1137,7 +1137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d88b8480add45f54d812bbf43f5b6495, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Pos0: {x: 5.0984583, y: 0.38813987, z: -2.1064835}
+  Pos0: {x: 5.0984583, y: 1.2017539, z: -2.078194}
   Pos1: {x: 5.0959954, y: 0.967856, z: -0.3300708}
   ShowVelocities: 0
   Vel0: {x: 5.395577, y: 0, z: -2.0344806}
@@ -1145,8 +1145,7 @@ MonoBehaviour:
   GroundClearance: 1
   obstacleMargin: 0.1
   footPath:
-    curveJoint: 0.2600227
-    tp: {x: 5.39802, y: 0.9845005, z: -1.79}
+    tp: {x: 5.3971176, y: 1.6675131, z: -1.1261665}
   inter: 0.345
 --- !u!4 &1393146121
 Transform:
