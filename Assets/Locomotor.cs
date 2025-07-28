@@ -10,13 +10,9 @@ public class Locomotor : MonoBehaviour
     [Range(0,1)][SerializeField] private float targetOvershoot = 0.09f;
     [SerializeField] private float footVelocity = 0.1f;
     public const int LEG_COUNT = 6;
-    private Vector3[] feetPositions = new Vector3[LEG_COUNT];
-    public Vector3[] restTargets = new Vector3[LEG_COUNT];
+    public Foot[] feet = new Foot[LEG_COUNT];
     public bool edit = false;
-    private Vector3[] moveTargets = new Vector3[LEG_COUNT];
     [SerializeField] private float maxAltitudeDeviation = 1.0f;
-    private bool[] grounded = new bool[LEG_COUNT];
-
     [SerializeField] private float coreHeight = 0.5f;
 
     [Header("Pathfinding")]
@@ -32,6 +28,23 @@ public class Locomotor : MonoBehaviour
     // [SerializeField] private List<Vector3> traceOrigins = new List<Vector3>();
 
     private Vector3 mechDirection = new(0f, 0f, 0f);
+
+    void Awake()
+    {
+        Foot.maxAltitudeDeviation = maxAltitudeDeviation;
+        Foot.targetWidth = targetWidth;
+        Foot.idleTargetWidth = idleTargetWidth;
+        Foot.walkingTargetWidth = walkingTargetWidth;
+        Foot.targetOvershoot = targetOvershoot;
+        Foot.velocity = footVelocity;
+        
+        feet[0] = new Foot(new Vector3(0.5f, 0, 0.5f));
+        feet[1] = new Foot(new Vector3(0.5f, 0, -0.5f));
+        feet[2] = new Foot(new Vector3(-0.5f, 0, 0.5f));
+        feet[3] = new Foot(new Vector3(-0.5f, 0, -0.5f));
+        feet[4] = new Foot(new Vector3(0, 0, 0.5f));
+        feet[5] = new Foot(new Vector3(0, 0, -0.5f));
+    }
 
     void Update()
     {
@@ -64,67 +77,22 @@ public class Locomotor : MonoBehaviour
 
         for (int i = 0; i < LEG_COUNT; i++)
         {
-            float distance = new Vector3(
-                restTargets[i].x + transform.position.x - feetPositions[i].x,
-                restTargets[i].y - feetPositions[i].y,
-                restTargets[i].z + transform.position.z - feetPositions[i].z
-                ).magnitude;
-            if (distance > targetWidth || !grounded[i])
-            {
-                if (grounded[i])
-                {
-                    grounded[i] = !(grounded[(i + LEG_COUNT - 1) % LEG_COUNT] && grounded[(i + LEG_COUNT + 1) % LEG_COUNT]);
-
-                    if (!grounded[i])
-                    {
-                        Vector3 heightlessTarget = restTargets[i] + Vector3.Scale(transform.position, new(1, 0, 1));
-
-                        Vector3 overshoot = Vector3.zero;
-                        if (state != State.Idle) overshoot = Vector3.Scale(mechDirection, new(1,0,1)) * targetOvershoot * targetWidth;
-                        // Implement hole detection
-                        RaycastHit hit;
-                        if (Physics.Raycast(
-                            heightlessTarget +
-                            overshoot +
-                            Vector3.up * maxAltitudeDeviation,
-                            Vector3.down, out hit, maxAltitudeDeviation * 2))
-                        {
-                            moveTargets[i] = hit.point;
-                            // traceHits.Add(hit.point);
-                            // traceOrigins.Add(heightlessTarget + overshoot + Vector3.up * maxAltitudeDeviation);
-                        }
-                    }
-                }
-
-                if (!grounded[i])
-                {
-                    float stepDistance = footVelocity * Time.deltaTime;
-                    Vector3 displacementVector = moveTargets[i] - feetPositions[i];
-                    if (displacementVector.magnitude > stepDistance)
-                    {
-                        feetPositions[i] += displacementVector.normalized * stepDistance;
-                    }
-                    else
-                    {
-                        feetPositions[i] = moveTargets[i];
-                        grounded[i] = true;
-                        restTargets[i].y = feetPositions[i].y;
-                    }
-                }
-            }
-            else
-            {
-                grounded[i] = true;
-            }
+            feet[i].Update(
+                feet[(i + LEG_COUNT - 1) % LEG_COUNT].Grounded,
+                feet[(i + 1) % LEG_COUNT].Grounded,
+                transform.position,
+                state,
+                mechDirection
+            );
         }
 
         short groundedCount = 0;
         float altitudeSum = 0;
         for (int i = 0; i < LEG_COUNT; i++)
         {
-            if (!grounded[i]) continue;
+            if (!feet[i].Grounded) continue;
             groundedCount++;
-            altitudeSum += feetPositions[i].y;
+            altitudeSum += feet[i].Position.y;
         }
         transform.position = new Vector3(
             transform.position.x,
@@ -133,7 +101,7 @@ public class Locomotor : MonoBehaviour
         );
     }
 
-    void DrawCircle(Vector3 center, float radius, Color color)
+    public static void DrawCircle(Vector3 center, float radius, Color color)
     {
         Gizmos.color = color;
         for (int i = 0; i < radius * 120; i++)
@@ -151,51 +119,15 @@ public class Locomotor : MonoBehaviour
         DrawCircle(pathTarget, pathTargetRadius, Color.magenta);
         Gizmos.DrawSphere(transform.position, 0.2f);
 
-        if (showRestTargets)
-            foreach (var target in restTargets)
-            {
-                DrawCircle(target + Vector3.Scale(transform.position, new(1, 0, 1)), targetWidth, Color.red);
-            }
-
-        for (int i = 0; i < LEG_COUNT; i++)
+        foreach (var foot in feet)
         {
-            Gizmos.color = grounded[i] ? Color.blue : Color.cyan;
-            Gizmos.DrawSphere(feetPositions[i], 0.2f);
-
-            if (!showMoveTargets) continue;
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(restTargets[i] + Vector3.Scale(transform.position, new(1, 0, 1)), feetPositions[i]);
-            Gizmos.DrawSphere(moveTargets[i], 0.1f);
-
-            // Show ray cast targets
-            if (false) continue;
-            Gizmos.color = Color.yellow;
-
-            Vector3 heightlessTarget = restTargets[i] + Vector3.Scale(transform.position, new(1, 0, 1));
-
-            Vector3 overshoot = Vector3.zero;
-            if (state != State.Idle) overshoot = mechDirection * targetOvershoot * targetWidth;
-
-            Gizmos.DrawLine(
-                heightlessTarget +
-                overshoot +
-                Vector3.up * maxAltitudeDeviation,
-                heightlessTarget +
-                overshoot +
-                Vector3.down * maxAltitudeDeviation
-                );
+            foot.Draw(
+                transform.position,
+                state,
+                mechDirection,
+                showMoveTargets,
+                showRestTargets);
         }
-        // foreach (var hit in traceHits)
-        // {
-        //     Gizmos.color = Color.yellow;
-        //     Gizmos.DrawSphere(hit, 0.1f);
-        // }
-        // foreach (var hit in traceOrigins)
-        // {
-        //     Gizmos.color = new Color(1f, 0.5f, 0);
-        //     Gizmos.DrawSphere(hit, 0.1f);
-        // }
-
     }
 }
 
@@ -228,11 +160,11 @@ public class LocomotorEditor : Editor
         for (int i = 0; i < Locomotor.LEG_COUNT; i++)
         {
             EditorGUI.BeginChangeCheck();
-            Vector3 target = Handles.PositionHandle(loc.restTargets[i] + Vector3.Scale(loc.transform.position, new (1,0,1)), Quaternion.identity);
+            Vector3 target = Handles.PositionHandle(loc.feet[i].restTarget + Vector3.Scale(loc.transform.position, new(1, 0, 1)), Quaternion.identity);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(loc, "Change Target Position");
-                loc.restTargets[i] = target - Vector3.Scale(loc.transform.position, new (1,0,1));
+                loc.feet[i].restTarget = target - Vector3.Scale(loc.transform.position, new(1, 0, 1));
                 EditorUtility.SetDirty(loc);
             }
         }
