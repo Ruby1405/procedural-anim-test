@@ -4,12 +4,11 @@ using UnityEngine;
 [Serializable]
 public class Foot
 {
-    public Vector3 Position { get; private set; }
+    public Vector3 Position;// { get; private set; }
     public Vector3 restTarget;
     private Vector3 moveTarget;
     private FootPath path;
     public static float velocity;
-    public static float targetWidth;
     public static float idleTargetWidth;
     public static float walkingTargetWidth;
     public static float targetOvershoot;
@@ -39,6 +38,13 @@ public class Foot
             restTarget.z + parentPosition.z - Position.z
         ).magnitude;
 
+        float targetWidth = state switch
+        {
+            State.Idle => idleTargetWidth,
+            State.Walking => walkingTargetWidth,
+            _ => walkingTargetWidth
+        };
+
         // If the foot is outside the target and grounded check if it can move
         if (distance > targetWidth && Grounded)
         {
@@ -67,6 +73,12 @@ public class Foot
                 }
                 moveTarget = hit.point;
 
+                if ((moveTarget - Position).magnitude < idleTargetWidth)
+                {
+                    Grounded = true;
+                    return;
+                }
+
                 // create a new path for the foot
                 path = new FootPath(Position, moveTarget);
             }
@@ -83,6 +95,8 @@ public class Foot
             // If the foot is not grounded, move it along the path
             Position = path.Move(velocity, out bool finished);
             Grounded = finished;
+
+            // Debug.Log(Position);
         }
     }
 
@@ -118,7 +132,7 @@ public class Foot
         Vector3 heightlessTarget = restTarget + Vector3.Scale(parentPosition, new(1, 0, 1));
 
         Vector3 overshoot = Vector3.zero;
-        if (state != State.Idle) overshoot = direction * (targetOvershoot * targetWidth);
+        if (state != State.Idle) overshoot = direction * (targetOvershoot * walkingTargetWidth);
 
         Gizmos.DrawLine(
             heightlessTarget +

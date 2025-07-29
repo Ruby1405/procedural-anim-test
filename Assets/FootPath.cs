@@ -119,26 +119,31 @@ public class FootPath
                 t / curveJoint
             );
         }
-        return Vector3.Lerp(
+
+        Vector3 val =
+        Vector3.Lerp(
             Vector3.Lerp(Pos1, Pos2 + Vector3.up * climb, (t - curveJoint) / (1 - curveJoint)),
             Vector3.Lerp(Pos2 + Vector3.up * climb, Pos2, (t - curveJoint) / (1 - curveJoint)),
             (t - curveJoint) / (1 - curveJoint)
         );
+        return val;
     }
 
     public Vector3 Move(float velocity, out bool finished)
     {
         finished = false;
-        float prog0 = progress;
         progress += velocity * Time.deltaTime;
-        float prog1 = progress;
         if (progress >= length)
         {
             progress = length;
             finished = true;
+            return Pos2;
         }
 
-        
+        if (length == 0)
+        {
+            Debug.LogWarning("Length is zero");
+        }
         float t = progress / length;
         return GetPosition(t);
     }

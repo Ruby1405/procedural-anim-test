@@ -32,7 +32,6 @@ public class Locomotor : MonoBehaviour
     void Awake()
     {
         Foot.maxAltitudeDeviation = maxAltitudeDeviation;
-        Foot.targetWidth = targetWidth;
         Foot.idleTargetWidth = idleTargetWidth;
         Foot.walkingTargetWidth = walkingTargetWidth;
         Foot.targetOvershoot = targetOvershoot;

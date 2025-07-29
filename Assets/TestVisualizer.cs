@@ -100,6 +100,10 @@ public class TestVisualizer : MonoBehaviour
         }
 
         topCollisionPoint = BinaryHitScan(0, 0, true);
+        if (topCollisionPoint == Vector3.zero)
+        {
+            topCollisionPoint = (Pos0 + Pos1) * 0.5f + relY * ((Pos1 - Pos0).magnitude / 3);
+        }
 
         footPath = new FootPath(Pos0 + new Vector3(0.3f,0,0), Pos1 + new Vector3(0.3f,0,0));
     }
