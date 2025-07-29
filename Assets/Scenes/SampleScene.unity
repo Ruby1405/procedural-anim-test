@@ -868,22 +868,22 @@ MonoBehaviour:
   targetOvershoot: 0.901
   footVelocity: 7
   feet:
-  - Position: {x: -2.9465883, y: -1.4341821e-17, z: 0.6458982}
+  - Position: {x: -3.4556003, y: -1.0509361e-17, z: 0.4732995}
     restTarget: {x: 1.4, y: 0, z: 2}
-  - Position: {x: -2.3465886, y: 3.0067095e-17, z: -1.3541015}
+  - Position: {x: -2.8556, y: 3.3899556e-17, z: -1.5267003}
     restTarget: {x: 2, y: 0, z: 0}
-  - Position: {x: -2.9465883, y: 7.447602e-17, z: -3.354102}
+  - Position: {x: -3.4556003, y: 7.830848e-17, z: -3.5267003}
     restTarget: {x: 1.4, y: 0, z: -2}
-  - Position: {x: -5.7465887, y: 7.447602e-17, z: -3.3541017}
+  - Position: {x: -6.2556005, y: 7.8308474e-17, z: -3.5267}
     restTarget: {x: -1.4, y: 0, z: -2}
-  - Position: {x: -6.346588, y: 3.0067095e-17, z: -1.3541015}
+  - Position: {x: -6.8556004, y: 3.389956e-17, z: -1.5267004}
     restTarget: {x: -2, y: 0, z: 0}
-  - Position: {x: -5.746588, y: -1.4341821e-17, z: 0.6458982}
+  - Position: {x: -6.2556005, y: -1.0509356e-17, z: 0.4732993}
     restTarget: {x: -1.4, y: 0, z: 2}
   edit: 0
   maxAltitudeDeviation: 1.42
   coreHeight: 1.5
-  pathTarget: {x: -4.18958, y: 0, z: -1.5091524}
+  pathTarget: {x: -4.1304045, y: 0, z: -1.5515165}
   pathTargetRadius: 1
   mechVelocity: 2
   state: 0
@@ -899,7 +899,7 @@ Transform:
   m_GameObject: {fileID: 1123867164}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.3465886, y: 1.5, z: -1.3541017}
+  m_LocalPosition: {x: -4.8556004, y: 1.5, z: -1.5267004}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

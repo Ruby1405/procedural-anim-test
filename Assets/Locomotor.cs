@@ -35,7 +35,7 @@ public class Locomotor : MonoBehaviour
         Foot.maxAltitudeDeviation = maxAltitudeDeviation;
         Foot.idleTargetWidth = idleTargetWidth;
         Foot.walkingTargetWidth = walkingTargetWidth;
-        Foot.targetOvershoot = targetOvershoot;
+        Foot.targetOvershoot = targetOvershoot * mechVelocity;
         Foot.velocity = footVelocity;
         
         feet[0] = new Foot(new Vector3(1.4f, 0, 2f));
