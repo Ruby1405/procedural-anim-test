@@ -27,6 +27,7 @@ public class Foot
         bool firstNeighbourGrounded,
         bool secondNeighbourGrounded,
         Vector3 parentPosition,
+        float coreHeight,
         State state,
         Vector3 direction
         )
@@ -65,7 +66,7 @@ public class Foot
                 if (!Physics.Raycast(
                     heighlessTarget +
                     overshoot +
-                    Vector3.up * maxAltitudeDeviation,
+                    Vector3.up * (maxAltitudeDeviation + parentPosition.y - coreHeight),
                     Vector3.down, out hit, maxAltitudeDeviation * 2))
                 {
                     Grounded = true;
@@ -102,6 +103,7 @@ public class Foot
 
     public void Draw(
         Vector3 parentPosition,
+        float coreHeight,
         State state,
         Vector3 direction,
         bool showMoveTargets
@@ -137,7 +139,7 @@ public class Foot
         Gizmos.DrawLine(
             heightlessTarget +
             overshoot +
-            Vector3.up * maxAltitudeDeviation,
+            Vector3.up * (maxAltitudeDeviation + parentPosition.y - coreHeight),
             heightlessTarget +
             overshoot +
             Vector3.down * maxAltitudeDeviation

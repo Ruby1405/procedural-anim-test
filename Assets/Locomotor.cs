@@ -24,6 +24,7 @@ public class Locomotor : MonoBehaviour
     [Header("Gizmos")]
     [SerializeField] private bool showRestTargets = false;
     [SerializeField] private bool showMoveTargets = false;
+    [SerializeField] private bool showLegs = true;
     // [SerializeField] private List<Vector3> traceHits = new List<Vector3>();
     // [SerializeField] private List<Vector3> traceOrigins = new List<Vector3>();
 
@@ -80,6 +81,7 @@ public class Locomotor : MonoBehaviour
                 feet[(i + LEG_COUNT - 1) % LEG_COUNT].Grounded,
                 feet[(i + 1) % LEG_COUNT].Grounded,
                 transform.position,
+                coreHeight,
                 state,
                 mechDirection
             );
@@ -122,12 +124,22 @@ public class Locomotor : MonoBehaviour
         {
             foot.Draw(
                 transform.position,
+                coreHeight,
                 state,
                 mechDirection,
                 showMoveTargets);
 
             if (showRestTargets)
                 DrawCircle(foot.restTarget + Vector3.Scale(transform.position, new(1, 0, 1)), targetWidth, Color.red);
+
+            if (showLegs)
+            {
+                Gizmos.color = Color.blue;
+                Gizmos.DrawLine(
+                    transform.position,
+                    foot.Position
+                );
+            }
         }
     }
 }
