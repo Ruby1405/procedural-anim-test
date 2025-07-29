@@ -136,10 +136,27 @@ public class Locomotor : MonoBehaviour
             {
                 Gizmos.color = Color.blue;
                 Gizmos.DrawLine(
-                    transform.position,
+                    foot.restTarget * 0.5f + transform.position,
                     foot.Position
                 );
             }
+        }
+        if (showLegs)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLineStrip(
+                new Vector3[]
+                {
+                    feet[0].restTarget * 0.5f + transform.position,
+                    feet[1].restTarget * 0.5f + transform.position,
+                    feet[2].restTarget * 0.5f + transform.position,
+                    feet[3].restTarget * 0.5f + transform.position,
+                    feet[4].restTarget * 0.5f + transform.position,
+                    feet[5].restTarget * 0.5f + transform.position,
+                    feet[0].restTarget * 0.5f + transform.position
+                },
+                true
+            );
         }
     }
 }

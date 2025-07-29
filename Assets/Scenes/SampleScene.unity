@@ -883,7 +883,7 @@ MonoBehaviour:
   edit: 0
   maxAltitudeDeviation: 1.42
   coreHeight: 1.5
-  pathTarget: {x: -4.1304045, y: 0, z: -1.5515165}
+  pathTarget: {x: -4.5211797, y: 0, z: -1.5197773}
   pathTargetRadius: 1
   mechVelocity: 2
   state: 0
